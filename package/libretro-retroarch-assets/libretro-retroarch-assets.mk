@@ -1,0 +1,44 @@
+################################################################################
+#
+## retroarch assets
+#
+#################################################################################
+
+LIBRETRO_RETROARCH_ASSETS_VERSION = c2bbf234195bbad91c827337a2fb2b5bc727407b
+#LIBRETRO_RETROARCH_SOURCE = v$(LIBRETRO_RETROARCH_VERSION).tar.gz
+#LIBRETRO_RETROARCH_SITE = https://github.com/libretro/RetroArch/archive
+#LIBRETRO_RETROARCH_SITE = $(call github,<user>,<package>,$(LIBRETRO_RETROARCH_VERSION))
+LIBRETRO_RETROARCH_ASSETS_SITE = https://github.com/libretro/retroarch-assets.git
+LIBRETRO_RETROARCH_ASSETS_SITE_METHOD = git
+LIBRETRO_RETROARCH_ASSETS_LICENSE = ATTR-4
+LIBRETRO_RETROARCH_ASSETS_LICENSE_FILES = COPYING
+#LIBRETRO_RETROARCH_ASSETS_DEPENDENCIES = libretro-retroarch
+#LIBRETRO_RETROARCH_DEPENDENCIES = host-pkgconf alsa-lib libxkbcommon sdl
+
+	#$(HOST_MAKE_ENV) $(LIBRETRO_RETROARCH_ASSETS_MAKE_ENV) $(MAKE) $(LIBRETRO_RETROARCH_ASSETS_INSTALL_OPTS) -C $(LIBRETRO_RETROARCH_ASSETS_SRCDIR)
+	#$(HOST_MAKE_ENV) $(LIBRETRO_RETROARCH_ASSETS_MAKE_ENV) $(MAKE) $(LIBRETRO_RETROARCH_ASSETS_INSTALL_OPTS) -C $(LIBRETRO_RETROARCH_ASSETS_SRCDIR)
+	#install -D -m 0755 $(TARGET_DIR)/usr/share/retroarch/assets && \
+
+PKG := LIBRETRO_RETROARCH_ASSETS
+#MENUS = $(foreach MENU,$(BR2_PACKAGE_LIBRETRO_RETROARCH_MENUS),$(LIBRETRO_RETROARCH_ASSETS_SRCDIR)/$(MENU))
+MENUS =
+ifeq ($(BR2_PACKAGE_LIBRETRO_RETROARCH_XMB),y)
+MENUS += $(LIBRETRO_RETROARCH_ASSETS_SRCDIR)/xmb
+endif
+ifeq ($(BR2_PACKAGE_LIBRETRO_RETROARCH_RGUI),y)
+MENUS += $(LIBRETRO_RETROARCH_ASSETS_SRCDIR)/rgui
+endif
+ifeq ($(BR2_PACKAGE_LIBRETRO_RETROARCH_OZONE),y)
+MENUS += $(LIBRETRO_RETROARCH_ASSETS_SRCDIR)/ozone
+endif
+
+define LIBRETRO_RETROARCH_ASSETS_INSTALL_TARGET_CMDS
+	#$(TARGET_MAKE_ENV) $($(PKG)_MAKE_ENV) $($(PKG)_MAKE) $($(PKG)_INSTALL_TARGET_OPTS) -C $($(PKG)_SRCDIR)
+	install -d -m 0755 $(TARGET_DIR)/usr/share/retroarch/assets/
+	cp -a $(MENUS) $(TARGET_DIR)/usr/share/retroarch/assets/
+	#(cd $(LIBRETRO_RETROARCH_ASSETS_SRCDIR) && \
+	#)
+endef
+
+#$(eval $(autotools-package))
+$(eval $(generic-package))

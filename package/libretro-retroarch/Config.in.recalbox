@@ -1,0 +1,38 @@
+config BR2_PACKAGE_LIBRETRO_RETROARCH
+	bool "Retroarch"
+	depends on (BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBEGL || BR2_PACKAGE_HAS_LIBGL)
+	select BR2_PACKAGE_LIBRETRO_CORE_INFO
+	select BR2_PACKAGE_RETROARCH_ASSETS
+	help
+	  A multi emulator frontend.
+
+	  http://www.libretro.com
+
+comment "Retroarch depends on EGL or OpenGLES"
+	depends on !(BR2_PACKAGE_HAS_LIBEGL || BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBGL)
+
+if BR2_PACKAGE_LIBRETRO_RETROARCH
+
+menu "retroarch menus"
+config BR2_PACKAGE_LIBRETRO_RETROARCH_XMB
+	bool "Enable XMB menu"
+	help
+	  Enable XMB menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_RGUI
+	bool "Enable RGUI menu"
+	help
+	  Enable RGUI menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_MATERIALUI
+	bool "Enable MATERIALUI menu"
+	help
+	  Enable MATERIALUI menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_OZONE
+	bool "Enable OZONE menu"
+	help
+	  Enable OZONE menu.
+endmenu
+
+endif

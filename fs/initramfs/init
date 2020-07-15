@@ -1,0 +1,15 @@
+#!/bin/sh
+#set -x
+
+#/bin/busybox mkdir -p /dev /proc /bin /sbin /usr/bin /usr/sbin
+#/bin/busybox mount -t devtmpfs dev /dev
+#/bin/busybox mount -t proc proc /proc
+#/bin/busybox ln -sf /proc/self/fd /dev/fd
+#/bin/busybox ln -sf /proc/self/fd/0 /dev/stdin
+#/bin/busybox ln -sf /proc/self/fd/1 /dev/stdout
+#/bin/busybox ln -sf /proc/self/fd/2 /dev/stderr
+/bin/busybox --install
+env
+mkdir /mnt
+mount LABEL=ROOT /mnt
+/bin/busybox sh -l

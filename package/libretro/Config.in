@@ -1,0 +1,67 @@
+config BR2_PACKAGE_LIBRETRO
+	bool "libretro"
+	#depends on ((BR2_PACKAGE_HAS_LIBGLES && BR2_PACKAGE_HAS_LIBEGL) || \
+
+	depends on ((BR2_PACKAGE_HAS_LIBEGL) || (BR2_PACKAGE_HAS_LIBGLES) || \
+		(BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_LIBGLEW && BR2_PACKAGE_XORG7))
+	select BR2_PACKAGE_LIBRETRO_CORE_INFO
+	select BR2_PACKAGE_RETROARCH_ASSETS
+	#select BR2_PACKAGE_LIBGLEW
+	#select BR2_PACKAGE_LIBXKBCOMMON
+	help
+	  libretro
+comment "libretro needs libgles or libgl"
+	depends on !BR2_PACKAGE_HAS_LIBGLES || !BR2_PACKAGE_HAS_LIBEGL
+
+if BR2_PACKAGE_LIBRETRO
+
+source "$BR2_EXTERNAL_HARDERSOFT_PATH/package/libretro-retroarch/Config.in"
+source "$BR2_EXTERNAL_HARDERSOFT_PATH/package/libretro-retroarch-assets/Config.in"
+
+#choice
+#	prompt "libretro GL backend"
+#	default BR2_PACKAGE_LIBRETRO_GLES
+#	help
+#	  Select the GL Backend.
+#
+menu "libretro GL backends"
+	config BR2_PACKAGE_LIBRETRO_GBM
+		bool "gbm"
+		help
+		  gbm
+
+	config BR2_PACKAGE_LIBRETRO_GLES
+		depends on BR2_PACKAGE_HAS_LIBGLES
+		#depends on BR2_PACKAGE_HAS_LIBEGL
+		bool "gles"
+		help
+		  gles
+	comment "gles needs libgles, libegl"
+		depends on !BR2_PACKAGE_HAS_LIBGLES || !BR2_PACKAGE_HAS_LIBEGL
+
+	config BR2_PACKAGE_LIBRETRO_GL
+		depends on BR2_PACKAGE_HAS_LIBGL
+		depends on BR2_PACKAGE_XORG7
+		bool "gl"
+		help
+		  gl
+	comment "gl needs libgl, xorg"
+		depends on !BR2_PACKAGE_HAS_LIBGL || !BR2_PACKAGE_XORG7
+endmenu
+#endchoice
+
+menu "libretro audio backends"
+	config BR2_PACKAGE_LIBRETRO_ALSA
+		#depends on BR2_PACKAGE_ALSA_LIB
+		select BR2_PACKAGE_ALSA_LIB
+		bool "alsa"
+		help
+		  alsa
+endmenu
+
+menu "libretro cores"
+	source "$BR2_EXTERNAL_HARDERSOFT_PATH/package/libretro-core-bsnes/Config.in"
+	source "$BR2_EXTERNAL_HARDERSOFT_PATH/package/libretro-core-beetle-psx/Config.in"
+endmenu
+
+endif

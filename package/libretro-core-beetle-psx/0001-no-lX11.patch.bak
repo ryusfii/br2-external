@@ -1,0 +1,10 @@
+--- a/bsnes/GNUmakefile	2019-11-21 23:20:20.109698235 +0100
++++ b/bsnes/GNUmakefile	2019-11-21 23:20:54.149194474 +0100
+@@ -37,7 +37,6 @@
+ else ifneq ($(filter $(platform),linux bsd),)
+   ifeq ($(binary),application)
+     options += -Wl,-export-dynamic
+-    options += -lX11 -lXext
+   else ifeq ($(binary),library)
+     flags += -fPIC
+     options += -shared

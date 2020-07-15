@@ -1,0 +1,85 @@
+config BR2_PACKAGE_LIBRETRO_RETROARCH
+	bool "retroarch"
+	depends on BR2_PACKAGE_LIBRETRO
+	select BR2_PACKAGE_LIBRETRO_CORE_INFO
+	select BR2_PACKAGE_RETROARCH_ASSETS
+	#depends on (BR2_PACKAGE_HAS_LIBGLES || (BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_LIBGLEW && BR2_PACKAGE_XORG7))
+	#select BR2_PACKAGE_ALSA_LIB
+	#select BR2_PACKAGE_LIBGLEW
+	#select BR2_PACKAGE_LIBXKBCOMMON
+	help
+	  Cross-platform, sophisticated frontend for the libretro API
+
+if BR2_PACKAGE_LIBRETRO_RETROARCH
+
+menu "retroarch menus"
+config BR2_PACKAGE_LIBRETRO_RETROARCH_XMB
+	bool "Enable XMB menu"
+	help
+	  Enable XMB menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_RGUI
+	bool "Enable RGUI menu"
+	help
+	  Enable RGUI menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_MATERIALUI
+	bool "Enable MATERIALUI menu"
+	help
+	  Enable MATERIALUI menu.
+
+config BR2_PACKAGE_LIBRETRO_RETROARCH_OZONE
+	bool "Enable OZONE menu"
+	help
+	  Enable OZONE menu.
+endmenu
+
+#choice
+#	prompt "Retroarch GL Backend"
+#	default BR2_PACKAGE_RETROARCH_GLES
+#	help
+#	  Select the GL Backend.
+#
+#	config BR2_PACKAGE_RETROARCH_GLES
+#		depends on BR2_PACKAGE_HAS_LIBGLES
+#		bool "gles"
+#		help
+#		  gles
+#	config BR2_PACKAGE_RETROARCH_GL
+#		depends on BR2_PACKAGE_HAS_LIBGL
+#		depends on BR2_PACKAGE_XORG7
+#		bool "gl"
+#		help
+#		  gl
+#endchoice
+
+#config BR2_PACKAGE_RETROARCH_MENUS
+#	string "Enable menus (rgui materialui ozone xmb)"
+#	default rgui
+#	help
+#	  Space seperated list of menus.
+
+#choice
+#	prompt "Retroarch Menu"
+#	default BR2_PACKAGE_APACHE_MPM_WORKER
+#	help
+#	  Select the menu.
+#
+#config BR2_PACKAGE_RETROARCH_XMB
+#	bool "xmb"
+#	help
+#	  xmb
+#
+#config BR2_PACKAGE_APACHE_MPM_PREFORK
+#	bool "prefork"
+#	help
+#	  Implements a non-threaded, pre-forking web server
+#
+#config BR2_PACKAGE_APACHE_MPM_WORKER
+#	bool "worker"
+#	help
+#	  Implements a hybrid multi-threaded multi-process web server
+#
+#endchoice
+
+endif

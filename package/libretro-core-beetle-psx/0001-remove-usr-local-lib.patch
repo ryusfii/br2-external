@@ -1,0 +1,11 @@
+--- a/Makefile	2019-11-28 21:43:30.249455113 +0100
++++ b/Makefile	2019-11-28 21:43:54.688933443 +0100
+@@ -93,7 +93,7 @@
+          GLES = 1
+          GL_LIB := -lGLESv2
+       else
+-         GL_LIB := -L/usr/local/lib -lGL
++         GL_LIB := -lGL
+       endif
+    endif
+ 

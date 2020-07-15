@@ -1,0 +1,234 @@
+################################################################################
+#
+# RetroArch
+#
+################################################################################
+
+LIBRETRO_RETROARCH_VERSION = 1.8.4
+LIBRETRO_RETROARCH_SOURCE = v$(LIBRETRO_RETROARCH_VERSION).tar.gz
+LIBRETRO_RETROARCH_SITE = https://github.com/libretro/RetroArch/archive
+LIBRETRO_RETROARCH_LICENSE = GPL-3
+LIBRETRO_RETROARCH_LICENSE_FILES = COPYING
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-oss --enable-zlib --disable-opengl1 --disable-opengl
+LIBRETRO_RETROARCH_DEPENDENCIES = host-pkgconf
+
+ifeq ($(BR2_PACKAGE_SDL2),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-sdl2
+LIBRETRO_RETROARCH_DEPENDENCIES += sdl2
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-sdl2
+ifeq ($(BR2_PACKAGE_SDL),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-sdl
+LIBRETRO_RETROARCH_DEPENDENCIES += sdl
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-sdl
+endif
+endif
+
+# RPI 0 and 1
+ifeq ($(BR2_arm1176jzf_s),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-floathard
+endif
+
+# RPI 2 and 3
+ifeq ($(BR2_cortex_a7),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-floathard
+endif
+ifeq ($(BR2_arm)$(BR2_cortex_a53),yy)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-floathard
+endif
+
+ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-neon
+endif
+
+# Add dispamnx renderer and no opengl1.1 for Pi
+ifeq ($(BR2_PACKAGE_RPI_FIRMWARE),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-dispmanx
+endif
+
+# odroid xu4
+ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-floathard
+endif
+
+# x86 : SSE
+ifeq ($(BR2_X86_CPU_HAS_SSE),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-sse
+endif
+
+# Common
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-rgui --enable-xmb --enable-ozone
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-threads --enable-dylib
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-flac --enable-lua
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-networking
+
+# Package dependant
+
+ifeq ($(BR2_PACKAGE_XORG7),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-x11
+LIBRETRO_RETROARCH_DEPENDENCIES += xserver_xorg-server
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-x11
+endif
+
+ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-alsa
+LIBRETRO_RETROARCH_DEPENDENCIES += alsa-lib
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-alsa
+endif
+
+ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-pulse
+LIBRETRO_RETROARCH_DEPENDENCIES += pulseaudio
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-pulse
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-opengles
+LIBRETRO_RETROARCH_DEPENDENCIES += libgles
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-opengles
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-egl
+LIBRETRO_RETROARCH_DEPENDENCIES += libegl
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-egl
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
+LIBRETRO_RETROARCH_DEPENDENCIES += libopenvg
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUSB=y),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-libusb
+LIBRETRO_RETROARCH_DEPENDENCIES += libusb
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-libusb
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-zlib
+LIBRETRO_RETROARCH_DEPENDENCIES += zlib
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-zlib
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
+LIBRETRO_RETROARCH_DEPENDENCIES += udev
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-udev
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-udev
+endif
+
+ifeq ($(BR2_PACKAGE_FREETYPE),y)
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-freetype
+LIBRETRO_RETROARCH_DEPENDENCIES += freetype
+else
+LIBRETRO_RETROARCH_CONF_OPTS += --disable-freetype
+endif
+
+define RETROARCH_MALI_FIXUP
+	# the type changed with the recent sdk
+	$(SED) 's|mali_native_window|fbdev_window|g' $(@D)/gfx/drivers_context/mali_fbdev_ctx.c
+endef
+
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+LIBRETRO_RETROARCH_PRE_CONFIGURE_HOOKS += RETROARCH_MALI_FIXUP
+LIBRETRO_RETROARCH_CONF_OPTS += --enable-opengles --enable-mali_fbdev
+endif
+
+ifeq ($(BR2_i386),y)
+LIBRETRO_RETROARCH_COMPILER_COMMONS_CFLAGS = $(COMPILER_COMMONS_CFLAGS_NOLTO)
+LIBRETRO_RETROARCH_COMPILER_COMMONS_CXXFLAGS = $(COMPILER_COMMONS_CXXFLAGS_NOLTO)
+LIBRETRO_RETROARCH_COMPILER_COMMONS_LDFLAGS = $(COMPILER_COMMONS_LDFLAGS_NOLTO)
+else
+LIBRETRO_RETROARCH_COMPILER_COMMONS_CFLAGS = $(COMPILER_COMMONS_CFLAGS_SO)
+LIBRETRO_RETROARCH_COMPILER_COMMONS_CXXFLAGS = $(COMPILER_COMMONS_CXXFLAGS_SO)
+LIBRETRO_RETROARCH_COMPILER_COMMONS_LDFLAGS = $(COMPILER_COMMONS_LDFLAGS_SO)
+endif
+
+define LIBRETRO_RETROARCH_CONFIGURE_CMDS
+	(cd $(@D); rm -rf config.cache; \
+		$(TARGET_CONFIGURE_ARGS) \
+		$(TARGET_CONFIGURE_OPTS) \
+		CFLAGS="$(TARGET_CFLAGS) $(LIBRETRO_RETROARCH_COMPILER_COMMONS_CFLAGS)" \
+		CXXFLAGS="$(TARGET_CXXFLAGS) $(LIBRETRO_RETROARCH_COMPILER_COMMONS_CXXFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS) $(LIBRETRO_RETROARCH_COMPILER_COMMONS_LDFLAGS) -lc" \
+		CROSS_COMPILE="$(HOST_DIR)/bin/" \
+		PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig/" \
+		./configure \
+		--prefix=/usr \
+		$(LIBRETRO_RETROARCH_CONF_OPTS) \
+	)
+endef
+
+define LIBRETRO_RETROARCH_FIX_LIBS
+	$(SED) "s|-\([IL]\)/usr|-\1$(STAGING_DIR)/usr|g" $(@D)/config.mk
+endef
+
+LIBRETRO_RETROARCH_POST_CONFIGURE_HOOKS += RETROARCH_FIX_LIBS
+
+define LIBRETRO_RETROARCH_BUILD_CMDS
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+endef
+
+define LIBRETRO_RETROARCH_INSTALL_TARGET_CMDS
+	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) DESTDIR=$(TARGET_DIR) install
+endef
+
+$(eval $(generic-package))
+
+# DEFINITION OF LIBRETRO PLATFORM
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM =
+ifeq ($(BR2_ARM_CPU_ARMV6),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += armv6
+endif
+
+ifeq ($(BR2_cortex_a7),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_cortex_a8),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += armv8 cortexa8
+endif
+
+ifeq ($(BR2_i386),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM = unix
+endif
+
+ifeq ($(BR2_x86_64),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM = unix
+endif
+
+ifeq ($(BR2_cortex_a15)$(BR2_cortex_a15_a7),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += armv7 odroidxu4
+endif
+
+ifeq ($(BR2_aarch64)$(BR2_cortex_a53),yy)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += unix
+endif
+
+ifeq ($(BR2_arm)$(BR2_cortex_a53),yy)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += armv8
+endif
+
+ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
+LIBRETRO_RETROARCH_LIBRETRO_PLATFORM += neon
+endif
+
+# SPECIFIC PLATFORM
+# Will be equal to rpi1, rpi2, rpi3 if we are on rpi.
+# Will be equal to LIBRETRO_RETROARCH_LIBRETRO_PLATFORM otherwise
+###RETROARCH_LIBRETRO_BOARD=$(RETROARCH_LIBRETRO_PLATFORM)
+###ifeq ($(RECALBOX_SYSTEM_VERSION)),rpi2)
+###RETROARCH_LIBRETRO_BOARD=$(RECALBOX_SYSTEM_VERSION)
+###endif
+###ifeq ($(RECALBOX_SYSTEM_VERSION)),rpi3)
+###RETROARCH_LIBRETRO_BOARD=$(RECALBOX_SYSTEM_VERSION)
+###endif
+

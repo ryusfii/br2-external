@@ -1,0 +1,2 @@
+source "$BR2_EXTERNAL_HARDERSOFT_PATH/package/libretro/Config.in"
+##source "$BR2_EXTERNAL_BLA_PATH/package/package2/Config.in"

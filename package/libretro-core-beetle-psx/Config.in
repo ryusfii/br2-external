@@ -1,0 +1,6 @@
+config BR2_PACKAGE_LIBRETRO_BEETLE_PSX
+	bool "Enable beetle psx core"
+	depends on BR2_PACKAGE_LIBRETRO
+	help
+	  Enable beetle psx core.
+
